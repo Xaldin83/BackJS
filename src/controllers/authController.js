@@ -51,3 +51,34 @@ export const registerUser = async (req, res)=>{
 }
 
 //Fonction pour se connecter en tant qu'utilisateur
+
+export const loginUser = async (req,res)=>{
+     try {
+        if(!req.body){
+            return res.status(400).json({message:"Aune donnée envoyée"})
+        }
+        const {email, password}=req.body
+
+        if(!email || !password){
+            res.status(400)
+            throw new Error("Veuillez fournir tout les champs")
+        }
+    //Vérifier l'email, on utilisera +password car on a "select:false" dans le model
+    const user =await User.findOne({email}).select('+password')
+
+    // Vérifier le mot de passe
+    if(user&&(await user.matchPassword(password))){
+        res.json({
+            _id:user._id,
+            email:user.email,
+            token:generateToken(user._id)
+        })
+    }
+    res.status(401)
+    throw new Error("Email ou mot de passe incorrecte")
+
+    } catch (error) {
+        console.error('Enregistrement impossible : ',error)
+        return res.status(500).json({message:error.message})
+    }
+}

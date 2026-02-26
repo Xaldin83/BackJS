@@ -1,5 +1,6 @@
 import express from 'express'
 import { createQuote,deleteQuote,getAllQuotes,getRandomQuote, updateQuote } from '../controllers/quoteController.js'
+import { protect } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
 
@@ -11,12 +12,12 @@ router.get('/',getRandomQuote)
 
 router.get('/',getRandomQuote)
 
-router.post('/',createQuote)
+router.post('/',protect,createQuote)
 
-router.delete('/:id',deleteQuote)
+router.delete('/:id',protect, deleteQuote)
 
-router.put('/:id', updateQuote)
+router.put('/:id',protect,  updateQuote)
 
-router.get('/all',getAllQuotes)
+router.get('/all',protect, getAllQuotes)
 
 export default router
