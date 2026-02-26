@@ -1,4 +1,6 @@
 import Quote from "../models/quoteModel.js"
+import {GoogleGenAI} from "@google/genai"
+import z, { json } from "zod"
 
 const defaultQuotes=[
     {quote:"Il n'y a qu'une seule façon d'échouer, c'est d'abandonner avant d'avoir réussi.", author:"A"},
@@ -93,6 +95,37 @@ export const getAllQuotes = async (req, res) =>{
         res.status(200).json(quotes)
     } catch (error) {
         console.error("Erreur d'affichages'",error)
+        res.status(500).json({message:error.message})
+    }
+}
+
+export const getAiQuote = async (req, res)=>{
+    try {
+        const ai = new GoogleGenAI({apiKey:process.env.GEMINI_API})
+
+        const  quoteSchema = z.object({
+            quote:z.string(),
+            author:z.string()
+        })
+
+        const req= await ai.models.generateContent({
+            model:"gemini-2.5-flash-lite",
+            contents:"Donne moi une citation en français",
+            config:{
+                responseMimeType:"application/json",
+                responseJsonSchema:z.toJSONSchema(quoteSchema)
+            }
+        })
+
+        const jsonText = req.text
+        const parsed = JSON.parse(jsonText)
+
+        const validated = quoteSchema.parse(parsed)
+
+        res.json(validated)
+
+    } catch (error) {
+        console.error("Impossible de générer : ",error)
         res.status(500).json({message:error.message})
     }
 }

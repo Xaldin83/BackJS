@@ -14,7 +14,7 @@ const generateToken = (id)=>{
 export const registerUser = async (req, res)=>{
     try {
         if(!req.body){
-            return res.status(400).json({message:"Aune donnée envoyée"})
+            return res.status(400).json({message:"Aucune donnée envoyée"})
         }
         const {email, password}=req.body
 
