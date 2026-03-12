@@ -11,13 +11,11 @@ const router = express.Router()
 // Une app qui fourni des phrases inspirantes
 router.get('/',getRandomQuote)
 
-router.get('/',getRandomQuote)
-
 router.post('/',protect,createQuote)
 
 router.delete('/:id',protect, deleteQuote)
 
-router.put('/:id',protect,  updateQuote)
+router.put('/:id',protect, updateQuote)
 
 router.get('/all', getAllQuotes)
 
